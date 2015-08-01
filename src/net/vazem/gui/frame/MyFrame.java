@@ -20,6 +20,8 @@ public class MyFrame extends JFrame {
 
     private File source;
 
+    private File output;
+
     public MyFrame(String title){
         super(title);
         createGUI();
@@ -32,7 +34,7 @@ public class MyFrame extends JFrame {
         Map<JButton,PushingListener> mBtnAndListener = new LinkedHashMap<JButton, PushingListener>();
         Map<JComboBox<String>,ComboBoxListener> mComboBoxAndListener = new LinkedHashMap<JComboBox<String>,ComboBoxListener>();
         
-        openFile();
+        setSource(openFile(JFileChooser.FILES_ONLY));
         SourceData sourceData = new SourceData(source);
         aHeaderColumn = sourceData.getAllColumnNames(true,";");
         String[] dataTypes = new String[]{"Int","Double", "String"};
@@ -72,10 +74,10 @@ public class MyFrame extends JFrame {
 
         JButton compBtn = new JButton("End");
         compBtn.setBounds(0,100,85,30);
-        compBtn.addActionListener(new EndListener(mBtnAndListener, mComboBoxAndListener,getSource(),conditionField));
+        compBtn.addActionListener(new EndListener(mBtnAndListener, mComboBoxAndListener,getSource(),conditionField,getOutput()));
         getContentPane().add(compBtn);
         getContentPane().revalidate();
-
+        setOutput(openFile(JFileChooser.SAVE_DIALOG));
     }
 
 
@@ -94,15 +96,15 @@ public class MyFrame extends JFrame {
         getContentPane().revalidate();
     }
 
-    private void openFile(){
+    private File openFile(int mode){
         File file = null;
         JFileChooser fileChooser = new JFileChooser();
-        fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        fileChooser.setFileSelectionMode(mode);
         int ret = fileChooser.showDialog(null, "Открыть файл");
         if(ret == JFileChooser.APPROVE_OPTION) {
             file = fileChooser.getSelectedFile();
         }
-        setSource(file);
+        return file;
     }
 
 
@@ -114,4 +116,11 @@ public class MyFrame extends JFrame {
         this.source = source;
     }
 
+    public File getOutput() {
+        return output;
+    }
+
+    public void setOutput(File output) {
+        this.output = output;
+    }
 }

@@ -8,6 +8,8 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.IOException;
+import java.io.PrintStream;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -22,16 +24,20 @@ public class EndListener implements ActionListener {
 
     private File source;
 
+    private File output;
+
     private JTextField conditionFiled;
 
     public EndListener(Map<JButton,PushingListener> mButtonColumn,
                        Map<JComboBox<String>,ComboBoxListener> mComboBoxColumn,
                        File file,
-                       JTextField textField){
+                       JTextField textField,
+                       File output){
         this.mButtonColumn = mButtonColumn;
         this.source = file;
         this.mComboBoxColumn = mComboBoxColumn;
         this.conditionFiled = textField;
+        this.output = output;
     }
 
     public void actionPerformed(ActionEvent event){
@@ -84,11 +90,18 @@ public class EndListener implements ActionListener {
                 String query = "SELECT " + columns +" FROM " + tableName;
                 query += " WHERE " + condition;
                 ResultSet resultSet = statement.executeQuery(query);
-                CsvDriver.writeToCsv(resultSet, System.out, false);
+                PrintStream ps = new PrintStream(output + "\\output.csv");
+                CsvDriver.writeToCsv(resultSet, ps, false);
                 conn.close();
+                conditionFiled.setText("Done");
+                ps.close();
             } catch (SQLException e){
 
+            } catch (IOException e){
+
             }
+
+
         }
     }
 }
