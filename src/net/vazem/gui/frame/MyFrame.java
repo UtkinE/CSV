@@ -1,15 +1,15 @@
 package net.vazem.gui.frame;
 
 
-
 import net.vazem.file.SourceData;
 import net.vazem.gui.listener.ComboBoxListener;
 import net.vazem.gui.listener.EndListener;
-import net.vazem.gui.listener.OpenFileListener;
 import net.vazem.gui.listener.PushingListener;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -20,24 +20,48 @@ public class MyFrame extends JFrame {
 
     private File source;
 
-    private File output;
+    private String separator;
 
     public MyFrame(String title){
         super(title);
-        createGUI();
+        createFileOpenBtn();
+
     }
 
+    private void createFileOpenBtn(){
+        getContentPane().setLayout(null);
+        final JTextField sepField = new JTextField();
+        sepField.setBounds(470,35,250,30);
+        getContentPane().add(sepField);
+        getContentPane().revalidate();
+        JButton btn = new JButton("Open File");
+        btn.setBackground(Color.WHITE);
+        btn.setBounds(90, 400, 185, 30);
+        btn.addActionListener(new ActionListener(){
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (sepField.getText().trim().length() > 0) {
+                    setSource(openFile(JFileChooser.FILES_ONLY));
+                    setSeparator(sepField.getText());
+                    createGUI();
+                    getContentPane().repaint();
+                } else {
 
+                }
+            }
+        });
+        getContentPane().add(btn);
+        getContentPane().revalidate();
+    }
 
     private void createGUI(){
-       // drawBtnOpenFileAndDelim();
         Map<JButton,PushingListener> mBtnAndListener = new LinkedHashMap<JButton, PushingListener>();
         Map<JComboBox<String>,ComboBoxListener> mComboBoxAndListener = new LinkedHashMap<JComboBox<String>,ComboBoxListener>();
-        
-        setSource(openFile(JFileChooser.FILES_ONLY));
+
         SourceData sourceData = new SourceData(source);
-        aHeaderColumn = sourceData.getAllColumnNames(true,";");
+        aHeaderColumn = sourceData.getAllColumnNames(true,getSeparator());
         String[] dataTypes = new String[]{"Int","Double", "String"};
+        File output = new File(source.getParent());
 
         //add button and checkbox for each column
         int yPos = 35;
@@ -58,11 +82,10 @@ public class MyFrame extends JFrame {
         }
 
         JTextField conditionField = new JTextField();
-        conditionField.setBounds(470,35,250,30);
+        conditionField.setBounds(470,70,250,30);
         getContentPane().add(conditionField);
         getContentPane().revalidate();
 
-        getContentPane().setLayout(null);
         for(JButton btn : mBtnAndListener.keySet()){
             getContentPane().add(btn);
             getContentPane().revalidate();
@@ -74,27 +97,11 @@ public class MyFrame extends JFrame {
 
         JButton compBtn = new JButton("End");
         compBtn.setBounds(0,100,85,30);
-        compBtn.addActionListener(new EndListener(mBtnAndListener, mComboBoxAndListener,getSource(),conditionField,getOutput()));
+        compBtn.addActionListener(new EndListener(mBtnAndListener, mComboBoxAndListener,getSource(),conditionField,output,getSeparator()));
         getContentPane().add(compBtn);
         getContentPane().revalidate();
-        setOutput(openFile(JFileChooser.SAVE_DIALOG));
     }
 
-
-    private void  drawBtnOpenFileAndDelim(){
-        JTextField delimField = new JTextField(";",4);
-        delimField.setBounds(270, 35, 75, 30);
-        getContentPane().add(delimField);
-        getContentPane().revalidate();
-
-
-
-        JButton btnOpenFile = new JButton();
-        btnOpenFile.setBounds(0,0,185,30);
-        btnOpenFile.addActionListener(new OpenFileListener());
-        getContentPane().add(btnOpenFile);
-        getContentPane().revalidate();
-    }
 
     private File openFile(int mode){
         File file = null;
@@ -116,11 +123,12 @@ public class MyFrame extends JFrame {
         this.source = source;
     }
 
-    public File getOutput() {
-        return output;
+
+    public String getSeparator() {
+        return separator;
     }
 
-    public void setOutput(File output) {
-        this.output = output;
+    public void setSeparator(String separator) {
+        this.separator = separator;
     }
 }

@@ -28,16 +28,20 @@ public class EndListener implements ActionListener {
 
     private JTextField conditionFiled;
 
+    private String separator;
+
     public EndListener(Map<JButton,PushingListener> mButtonColumn,
                        Map<JComboBox<String>,ComboBoxListener> mComboBoxColumn,
                        File file,
                        JTextField textField,
-                       File output){
+                       File output,
+                       String separator){
         this.mButtonColumn = mButtonColumn;
         this.source = file;
         this.mComboBoxColumn = mComboBoxColumn;
         this.conditionFiled = textField;
         this.output = output;
+        this.separator = separator;
     }
 
     public void actionPerformed(ActionEvent event){
@@ -73,7 +77,6 @@ public class EndListener implements ActionListener {
     }
 
     private void executeQuery(String columns,String dataTypeProp,String condition){
-        String separator = ";";
         Properties props = new Properties();
             props.put("separator",separator);
             props.put("columnTypes",dataTypeProp);
@@ -88,9 +91,11 @@ public class EndListener implements ActionListener {
                 Statement statement = conn.createStatement();
                 String tableName = source.getName().replace(".csv", "");
                 String query = "SELECT " + columns +" FROM " + tableName;
-                query += " WHERE " + condition;
+                if(!condition.equals("")) {
+                    query += " WHERE " + condition;
+                }
                 ResultSet resultSet = statement.executeQuery(query);
-                PrintStream ps = new PrintStream(output + "\\output.csv");
+                PrintStream ps = new PrintStream(output.getAbsoluteFile() + "\\output.csv");
                 CsvDriver.writeToCsv(resultSet, ps, false);
                 conn.close();
                 conditionFiled.setText("Done");

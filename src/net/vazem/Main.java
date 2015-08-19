@@ -9,7 +9,7 @@ public class Main {
 
     public static void main(String[] args) {
         MyFrame mainFrame = new MyFrame("Hello World");
-        mainFrame.setSize(1024,768);
+        mainFrame.setSize(768,480);
         mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         mainFrame.setVisible(true);
 
