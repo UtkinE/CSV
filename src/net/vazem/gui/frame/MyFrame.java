@@ -30,6 +30,9 @@ public class MyFrame extends JFrame {
 
     private void createFileOpenBtn(){
         getContentPane().setLayout(null);
+        JLabel lblSeparator = new JLabel("Separator");
+        lblSeparator.setBounds(470,5,250,30);
+        getContentPane().add(lblSeparator);
         final JTextField sepField = new JTextField();
         sepField.setBounds(470,35,250,30);
         getContentPane().add(sepField);
@@ -64,6 +67,9 @@ public class MyFrame extends JFrame {
         File output = new File(source.getParent());
 
         //add button and checkbox for each column
+        JLabel lblColum = new JLabel("List of columns");
+        lblColum.setBounds(90,5,180,30);
+        getContentPane().add(lblColum);
         int yPos = 35;
         for(String title : aHeaderColumn) {
             JButton btn = new JButton(title);
@@ -81,13 +87,22 @@ public class MyFrame extends JFrame {
 
         }
 
+
+        JLabel lblCond = new JLabel("Condition");
+        lblCond.setBounds(470, 70,250,30);
+        getContentPane().add(lblCond);
+
         JTextField conditionField = new JTextField();
-        conditionField.setBounds(470, 70,250,30);
+        conditionField.setBounds(470, 105,250,30);
         getContentPane().add(conditionField);
         getContentPane().revalidate();
 
+        JLabel lblFormat = new JLabel("Format for data/time");
+        lblFormat.setBounds(470, 135,250,30);
+        getContentPane().add(lblFormat);
+
         JTextField formatField = new JTextField();
-        formatField.setBounds(470, 105,250,30);
+        formatField.setBounds(470, 170,250,30);
         getContentPane().add(formatField);
         getContentPane().revalidate();
 
@@ -95,13 +110,17 @@ public class MyFrame extends JFrame {
             getContentPane().add(btn);
             getContentPane().revalidate();
         }
+        JLabel lblTypes = new JLabel("Type of columns");
+        lblTypes.setBounds(280,5,185,30);
+        getContentPane().add(lblTypes);
+
         for(JComboBox<String> comboBox : mComboBoxAndListener.keySet()){
             getContentPane().add(comboBox);
             getContentPane().revalidate();
         }
 
-        JButton compBtn = new JButton("End");
-        compBtn.setBounds(0, 100,85,30);
+        JButton compBtn = new JButton("Search and Write");
+        compBtn.setBounds(90, 360, 185, 30);
         compBtn.addActionListener(new EndListener(mBtnAndListener, mComboBoxAndListener, getSource(), conditionField, output, getSeparator(),formatField));
         getContentPane().add(compBtn);
         getContentPane().revalidate();
