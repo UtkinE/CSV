@@ -60,7 +60,7 @@ public class MyFrame extends JFrame {
 
         SourceData sourceData = new SourceData(source);
         aHeaderColumn = sourceData.getAllColumnNames(true,getSeparator());
-        String[] dataTypes = new String[]{"Int","Double", "String"};
+        String[] dataTypes = new String[]{"String", "Int","Double", "Timestamp", "Date", "Time"};
         File output = new File(source.getParent());
 
         //add button and checkbox for each column
@@ -82,8 +82,13 @@ public class MyFrame extends JFrame {
         }
 
         JTextField conditionField = new JTextField();
-        conditionField.setBounds(470,70,250,30);
+        conditionField.setBounds(470, 70,250,30);
         getContentPane().add(conditionField);
+        getContentPane().revalidate();
+
+        JTextField formatField = new JTextField();
+        formatField.setBounds(470, 105,250,30);
+        getContentPane().add(formatField);
         getContentPane().revalidate();
 
         for(JButton btn : mBtnAndListener.keySet()){
@@ -96,8 +101,8 @@ public class MyFrame extends JFrame {
         }
 
         JButton compBtn = new JButton("End");
-        compBtn.setBounds(0,100,85,30);
-        compBtn.addActionListener(new EndListener(mBtnAndListener, mComboBoxAndListener,getSource(),conditionField,output,getSeparator()));
+        compBtn.setBounds(0, 100,85,30);
+        compBtn.addActionListener(new EndListener(mBtnAndListener, mComboBoxAndListener, getSource(), conditionField, output, getSeparator(),formatField));
         getContentPane().add(compBtn);
         getContentPane().revalidate();
     }

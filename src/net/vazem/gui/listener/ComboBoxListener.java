@@ -7,7 +7,7 @@ import java.awt.event.ActionListener;
 
 public class ComboBoxListener implements ActionListener{
 
-    private String selectedValue = "Int";
+    private String selectedValue = "String";
 
     public void actionPerformed(ActionEvent event){
         JComboBox<String> comboBox = (JComboBox<String>) event.getSource();
