@@ -80,7 +80,7 @@ public class EndListener implements ActionListener {
         executeQuery(sWhatSearch.toString(),sDataTypeProp.toString(),conditionFiled.getText());
 
     }
-
+//
     private void executeQuery(String columns,String dataTypeProp,String condition){
         String sDateOrTime = "dateFormat";
         Properties props = new Properties();

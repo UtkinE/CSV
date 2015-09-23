@@ -53,7 +53,7 @@ public class MyFrame extends JFrame {
         getContentPane().add(btn);
         getContentPane().revalidate();
     }
-
+//
     private void createGUI(){
         Map<JButton,PushingListener> mBtnAndListener = new LinkedHashMap<JButton, PushingListener>();
         Map<JComboBox<String>,ComboBoxListener> mComboBoxAndListener = new LinkedHashMap<JComboBox<String>,ComboBoxListener>();
