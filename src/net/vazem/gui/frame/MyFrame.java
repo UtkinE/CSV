@@ -22,6 +22,9 @@ public class MyFrame extends JFrame {
 
     private String separator;
 
+    //private Boolean isHeader = true;
+
+
     public MyFrame(String title){
         super(title);
         createFileOpenBtn();
@@ -34,7 +37,11 @@ public class MyFrame extends JFrame {
         lblSeparator.setBounds(470,5,250,30);
         getContentPane().add(lblSeparator);
         final JTextField sepField = new JTextField();
-        sepField.setBounds(470,35,250,30);
+        sepField.setBounds(470,35,50,30);
+        final JCheckBox headerBox = new JCheckBox("Headline");
+        headerBox.setBounds(600,25,250,30);
+        headerBox.setSelected(true);
+        getContentPane().add(headerBox);
         getContentPane().add(sepField);
         getContentPane().revalidate();
         JButton btn = new JButton("Open File");
@@ -46,23 +53,24 @@ public class MyFrame extends JFrame {
                 if (sepField.getText().trim().length() > 0) {
                     setSource(openFile(JFileChooser.FILES_ONLY));
                     setSeparator(sepField.getText());
-                    createGUI();
+                    createGUI(headerBox.isSelected());
                     getContentPane().repaint();
                 } else {
 
                 }
             }
         });
+
         getContentPane().add(btn);
         getContentPane().revalidate();
     }
 //
-    private void createGUI(){
+    private void createGUI(Boolean isHeaderLine){
         Map<JButton,PushingListener> mBtnAndListener = new LinkedHashMap<JButton, PushingListener>();
         Map<JComboBox<String>,ComboBoxListener> mComboBoxAndListener = new LinkedHashMap<JComboBox<String>,ComboBoxListener>();
 
         SourceData sourceData = new SourceData(source);
-        aHeaderColumn = sourceData.getAllColumnNames(true,getSeparator());
+        aHeaderColumn = sourceData.getAllColumnNames(isHeaderLine,getSeparator());
         String[] dataTypes = new String[]{"String", "Int","Double", "Timestamp", "Date", "Time"};
         File output = new File(source.getParent());
 
