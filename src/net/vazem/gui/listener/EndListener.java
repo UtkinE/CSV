@@ -60,7 +60,7 @@ public class EndListener implements ActionListener {
         List<Integer> numHeaders = new LinkedList<>();
         for(Map.Entry<JButton,PushingListener> entry : mButtonColumn.entrySet()){
             if(entry.getValue().isSTATE()){
-                sWhatSearch.append(entry.getKey().getText().trim()).append(',');
+                sWhatSearch.append("").append(entry.getKey().getText().trim()).append(',');
                 mStateButton.put(lComboxBox.get(nuboiIter),true);
                 numHeaders.add(nuboiIter+1);
             } else {
@@ -69,13 +69,13 @@ public class EndListener implements ActionListener {
             nuboiIter++;
         }
 
-        /*
 
+        /*
         for(Integer i : numHeaders){
             sWhatSearch.append("COLUMN").append(i).append(',');
         }
-        //isHeader = false;
-        /* */
+        isHeader = false;
+         */
         if(sWhatSearch.length() != 0){
             sWhatSearch.setLength(sWhatSearch.length()-1);
         }
@@ -94,23 +94,22 @@ public class EndListener implements ActionListener {
     }
 //
     private void executeQuery(String columns,String dataTypeProp,String condition){
-        String sDateOrTime = "dateFormat";
-        String sHeader = "";
         Boolean isNotHeader = !isHeader;
         Properties props = new Properties();
             props.put("separator",separator);
             props.put("columnTypes",dataTypeProp);
             props.put("ignoreNonParseableLines","true");
-            props.put("defectiveHeaders","true");
+            //props.put("defectiveHeaders","true");
+            //props.put("charset","UTF-8");
             props.put("suppressHeaders",isNotHeader.toString());
         if(!format.getText().equals("")) {
+            String sDateOrTime = "dateFormat";
             if(dataTypeProp.indexOf("Timestamp") != -1) {
                 sDateOrTime = "timestampFormat";
             }
             if(dataTypeProp.indexOf("Time") != -1) {
                 sDateOrTime = "timeFormat";
             }
-
             props.put(sDateOrTime, format.getText());
         }
             props.put("timeZoneName",java.util.TimeZone.getDefault().getID());
@@ -134,9 +133,9 @@ public class EndListener implements ActionListener {
                 conn.close();
                 ps.close();
             } catch (SQLException e){
-
+                System.err.println(e.getMessage());
             } catch (IOException e){
-
+                System.err.println(e.getMessage());
             }
 
 
