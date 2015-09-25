@@ -21,8 +21,8 @@ public class SourceData {
             } else {
                 Integer countColumn = bf.readLine().split(separator).length;
                 String[] nameColumn = new String[countColumn];
-                for(int i=0;i<countColumn;i++){
-                    nameColumn[i] = "COLUMN" + i;
+                for(int i=1;i<=countColumn;i++){
+                    nameColumn[i-1] = "COLUMN" + i;
                 }
                 return nameColumn;
             }

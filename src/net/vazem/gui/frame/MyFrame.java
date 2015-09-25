@@ -46,11 +46,13 @@ public class MyFrame extends JFrame {
         getContentPane().revalidate();
         JButton btn = new JButton("Open File");
         btn.setBackground(Color.WHITE);
-        btn.setBounds(90, 400, 185, 30);
+        btn.setBounds(470, 400, 185, 30);
         btn.addActionListener(new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (sepField.getText().trim().length() > 0) {
+                    getContentPane().removeAll();
+                    createFileOpenBtn();
                     setSource(openFile(JFileChooser.FILES_ONLY));
                     setSeparator(sepField.getText());
                     createGUI(headerBox.isSelected());
@@ -128,8 +130,8 @@ public class MyFrame extends JFrame {
         }
 
         JButton compBtn = new JButton("Search and Write");
-        compBtn.setBounds(90, 360, 185, 30);
-        compBtn.addActionListener(new EndListener(mBtnAndListener, mComboBoxAndListener, getSource(), conditionField, output, getSeparator(),formatField));
+        compBtn.setBounds(470, 360, 185, 30);
+        compBtn.addActionListener(new EndListener(mBtnAndListener, mComboBoxAndListener, getSource(), conditionField, output, getSeparator(),formatField,isHeaderLine));
         getContentPane().add(compBtn);
         getContentPane().revalidate();
     }
