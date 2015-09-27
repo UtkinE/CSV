@@ -2,7 +2,7 @@ package net.vazem.gui.listener;
 
 
 import net.vazem.sql.Connector;
-import org.relique.jdbc.csv.CsvDriver;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -15,6 +15,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.*;
+
 
 public class EndListener implements ActionListener {
 
@@ -53,18 +54,22 @@ public class EndListener implements ActionListener {
     }
 
     public void actionPerformed(ActionEvent event){
-        StringBuilder sWhatSearch = new StringBuilder("");
+        StringBuilder aliasColumn = new StringBuilder("");
+        StringBuilder nativeColumn = new StringBuilder("");
         Map<JComboBox<String>,Boolean> mStateButton= new LinkedHashMap<>();
-        int nuboiIter = 0;
+        Map<String,String> COLUMN_ALIAS = new LinkedHashMap<>();
+        int nuboiIter = 1;
         List<JComboBox<String>> lComboxBox = new LinkedList<>(mComboBoxColumn.keySet());
         List<Integer> numHeaders = new LinkedList<>();
         for(Map.Entry<JButton,PushingListener> entry : mButtonColumn.entrySet()){
             if(entry.getValue().isSTATE()){
-                sWhatSearch.append("").append(entry.getKey().getText().trim()).append(',');
-                mStateButton.put(lComboxBox.get(nuboiIter),true);
-                numHeaders.add(nuboiIter+1);
+                nativeColumn.append("").append(entry.getKey().getText().trim()).append(',');
+                aliasColumn.append("").append("COLUMN").append(nuboiIter).append(',');
+                COLUMN_ALIAS.put(entry.getKey().getText().trim(), "COLUMN" + nuboiIter);
+                mStateButton.put(lComboxBox.get(nuboiIter-1),true);
+                numHeaders.add(nuboiIter);
             } else {
-                mStateButton.put(lComboxBox.get(nuboiIter),false);
+                mStateButton.put(lComboxBox.get(nuboiIter-1),false);
             }
             nuboiIter++;
         }
@@ -72,12 +77,12 @@ public class EndListener implements ActionListener {
 
         /*
         for(Integer i : numHeaders){
-            sWhatSearch.append("COLUMN").append(i).append(',');
+            aliasColumn.append("COLUMN").append(i).append(',');
         }
         isHeader = false;
          */
-        if(sWhatSearch.length() != 0){
-            sWhatSearch.setLength(sWhatSearch.length()-1);
+        if(aliasColumn.length() != 0){
+            aliasColumn.setLength(aliasColumn.length()-1);
         }
         StringBuilder sDataTypeProp = new StringBuilder("");
         for(Map.Entry<JComboBox<String>,ComboBoxListener> entry : mComboBoxColumn.entrySet()){
@@ -89,19 +94,20 @@ public class EndListener implements ActionListener {
             sDataTypeProp.setLength(sDataTypeProp.length()-1);
         }
 
-        executeQuery(sWhatSearch.toString(),sDataTypeProp.toString(),conditionFiled.getText());
+        executeQuery(aliasColumn.toString(),sDataTypeProp.toString(),conditionFiled.getText(),COLUMN_ALIAS);
 
     }
 //
-    private void executeQuery(String columns,String dataTypeProp,String condition){
-        Boolean isNotHeader = !isHeader;
+    private void executeQuery(String columns,String dataTypeProp,String condition,Map<String,String> map){
+        Boolean isNotHeader = isHeader;
         Properties props = new Properties();
+            props.put("skipLeadingLines","1");
             props.put("separator",separator);
             props.put("columnTypes",dataTypeProp);
             props.put("ignoreNonParseableLines","true");
-            //props.put("defectiveHeaders","true");
-            //props.put("charset","UTF-8");
-            props.put("suppressHeaders",isNotHeader.toString());
+            props.put("charset","UTF-8");
+            props.put("suppressHeaders","true");
+
         if(!format.getText().equals("")) {
             String sDateOrTime = "dateFormat";
             if(dataTypeProp.indexOf("Timestamp") != -1) {
@@ -123,22 +129,71 @@ public class EndListener implements ActionListener {
             try {
                 Statement statement = conn.createStatement();
                 String tableName = source.getName().replace(".csv", "");
-                String query = "SELECT " + columns +" FROM " + tableName;
+                String query = "SELECT " + columns + " FROM " + tableName;
                 if(!condition.equals("")) {
+                    for(Map.Entry<String,String> entry : map.entrySet()){
+                        condition = condition.replace(entry.getKey(),entry.getValue());
+                    }
                     query += " WHERE " + condition;
                 }
                 ResultSet resultSet = statement.executeQuery(query);
-                PrintStream ps = new PrintStream(output.getAbsoluteFile() + "\\output.csv");
-                CsvDriver.writeToCsv(resultSet, ps, isHeader);
+
+                getData(resultSet, columns.split(","),map,dataTypeProp);
                 conn.close();
-                ps.close();
+
             } catch (SQLException e){
-                System.err.println(e.getMessage());
-            } catch (IOException e){
                 System.err.println(e.getMessage());
             }
 
 
         }
     }
+
+    private void getData(ResultSet set,String[] columns,Map<String,String> map,String types){
+        String[] typeColumn = types.split(",");
+        try{
+            PrintStream ps = new PrintStream(output.getAbsoluteFile() + "\\output.csv");
+
+            if(isHeader){
+                String header = StringUtils.join(map.keySet(), separator);
+                ps.println(header);
+            }
+
+            while(set.next()){
+                for(int i=0;i<columns.length;i++){
+                   String type = typeColumn[i].trim();
+                    if(type.equals("String")){
+                        ps.print(set.getString(columns[i]));
+                    }
+                    if(type.equals("Int")){
+                        ps.print(set.getInt(columns[i]));
+                    }
+                    if(type.equals("Double")){
+                        ps.print(set.getDouble(columns[i]));
+                    }
+                    if(type.equals("Date")){
+                        ps.print(set.getDate(columns[i]));
+                    }
+                    if(type.equals("Time")){
+                        ps.print(set.getTime(columns[i]));
+                    }
+                    if(type.equals("Timestamp")){
+                        ps.print(set.getTimestamp(columns[i]));
+                    }
+                    if(i != columns.length-1) {
+                        ps.print(";");
+                    }
+
+                }
+                ps.println();
+            }
+            ps.close();
+        } catch (SQLException e){
+            System.err.println(e.getMessage());
+        } catch (IOException e) {
+            System.err.println(e.getMessage());
+        }
+    }
+
+
 }
